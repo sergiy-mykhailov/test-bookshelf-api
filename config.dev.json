@@ -1,0 +1,9 @@
+{
+  "database": {
+    "host": "localhost",
+    "database": "bookshelf",
+    "username": "bookreader",
+    "password": "1",
+    "dialect": "postgres"
+  }
+}
