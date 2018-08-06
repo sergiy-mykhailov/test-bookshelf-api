@@ -15,17 +15,9 @@
 * create database: `npm run create`
 
 ## Starting App
-
-##### Without Migrations
 ```
 npm install
-npm start
-```
-
-##### With Migrations
-```
-npm install
-node_modules/.bin/sequelize db:migrate
+npm run migrate
 npm start
 ```
 
@@ -34,3 +26,27 @@ npm start
 npm test
 ```
 
+## Usage
+
+Client MUST specify the media type `application/vnd.api+json` in headers (`Content-Type` and `Accept`) - [Documentation](http://jsonapi.org/format/#content-negotiation)
+
+##### Sign-Up
+
+* Method: `POST`
+* Url: `/signup`
+* Example:
+```json
+{
+  "data": {
+    "type": "users",
+    "attributes": {
+      "name": "Jack",
+      "password": "secretpassword",
+      "email": "jack@example.com",
+      "address": "15 Gray str., New York, USA",
+      "telephone": "+1(234)5678910",
+      "website": "www.jack.website.com"
+    }
+  }
+}
+```

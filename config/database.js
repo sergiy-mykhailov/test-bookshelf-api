@@ -2,7 +2,9 @@
 const configDev = require('../config.dev.json').database;
 const configProd = require('../config.prod.json').database;
 
-module.exports = {
+const env = process.env.NODE_ENV || 'development';
+
+const config = {
   development: {
     username: configDev.username,
     password: configDev.password,
@@ -26,3 +28,5 @@ module.exports = {
     // use_env_variable: 'DATABASE_URL'
   }
 };
+
+module.exports = config[env];

@@ -9,6 +9,9 @@ module.exports = {
       key: 'Accept',
       value: 'application/vnd.api+json',
     },
+    authorization: {
+      key: 'Authorization',
+    }
   },
   res: {
     'Content-Type': 'application/vnd.api+json',

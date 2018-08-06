@@ -4,22 +4,29 @@ const express = require('express');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
-const serializeError = require('./serializers/error');
-const jsonApiHeaders = require('./middlewares/jsonApiHeaders');
+const passport = require('passport');
+const serializeError = require('./services/jsonApiError');
+const jsonApiHeaders = require('./services/jsonApiHeaders');
 const api = require('./api/index');
 // const users  = require('./api/users');
+const jwtStrategy = require('./services/jwtStrategy');
+const mediaType = require('./config/headers').req.contentType.value;
 
 const app = express();
 
 app.use(logger('dev'));
-app.use(bodyParser.json());
+app.use(bodyParser.json({ type: mediaType }));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 // json-api headers
 app.use(jsonApiHeaders);
 
-app.use('*', api);
+// auth
+app.use(passport.initialize());
+jwtStrategy(passport);
+
+app.use(api);
 // app.use('/users', users);
 
 // catch 404 and forward to error handler

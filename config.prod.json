@@ -5,5 +5,8 @@
     "username": "bookreader",
     "password": "1",
     "dialect": "postgres"
+  },
+  "jwt": {
+    "secret": "secret"
   }
 }
