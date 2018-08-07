@@ -38,14 +38,31 @@ Client MUST specify the media type `application/vnd.api+json` in headers (`Conte
 ```json
 {
   "data": {
-    "type": "users",
+    "type": "signup",
     "attributes": {
-      "name": "Jack",
+      "username": "Jack",
       "password": "secretpassword",
       "email": "jack@example.com",
       "address": "15 Gray str., New York, USA",
       "telephone": "+1(234)5678910",
       "website": "www.jack.website.com"
+    }
+  }
+}
+```
+
+##### Sign-In
+
+* Method: `POST`
+* Url: `/signin`
+* Example:
+```json
+{
+  "data": {
+    "type": "signin",
+    "attributes": {
+      "username": "Jack",
+      "password": "secretpassword"
     }
   }
 }

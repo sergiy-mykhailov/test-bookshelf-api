@@ -8,7 +8,6 @@ const passport = require('passport');
 const serializeError = require('./services/jsonApiError');
 const jsonApiHeaders = require('./services/jsonApiHeaders');
 const api = require('./api/index');
-// const users  = require('./api/users');
 const jwtStrategy = require('./services/jwtStrategy');
 const mediaType = require('./config/headers').req.contentType.value;
 
@@ -26,18 +25,17 @@ app.use(jsonApiHeaders);
 app.use(passport.initialize());
 jwtStrategy(passport);
 
-app.use(api);
-// app.use('/users', users);
+app.use('/api', api(passport));
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use((req, res, next) => {
   const err = new Error('Not Found');
   err.status = 404;
   next(err);
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use((err, req, res, next) => {
   const status = err.status || 500;
   const jsonApi = serializeError(status, err);
 

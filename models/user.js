@@ -1,14 +1,13 @@
-'use strict';
 
 module.exports = (sequelize, DataTypes) => {
-  const User = sequelize.define('User', {
+  const Model = sequelize.define('User', {
     id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
       autoIncrement: true,
     },
-    name: {
+    username: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: {
@@ -49,9 +48,13 @@ module.exports = (sequelize, DataTypes) => {
     },
   });
 
-  // User.associate = function(models) {
-  //   models.User.hasMany(models.Task);
-  // };
+  Model.associate = (models) => {
+    models.User.belongsToMany(models.Book, {
+      through: models.Bookshelf,
+      foreignKey: 'user_id',
+      as: 'books',
+    });
+  };
 
-  return User;
+  return Model;
 };

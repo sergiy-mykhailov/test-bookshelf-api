@@ -1,38 +1,27 @@
 
 const express = require('express');
-const passport = require('passport');
+const checkAuth = require('../services/checkAuth');
 const auth = require('./auth');
+const reports = require('./reports');
 
 const router  = express.Router();
 
-// const models  = require('../models');
-// const serializeError = require('../services/jsonApiError');
-// const serializeData = require('../services/jsonApiSerializer');
+const api = (passport) => {
+  router.post('/signup', auth.signup);
+  router.post('/signin', auth.signin);
 
-router.post('/signup', auth.signup);
-router.post('/signin', auth.signin);
+  // router.get('/reports/bookshelf', passport.authenticate('jwt', { session: false }), reports.bookshelf);
+  router.get('/reports/bookshelf', checkAuth(passport), reports.bookshelf);
+  router.get('/reports/borrowed', checkAuth(passport), reports.borrowed);
 
-// router.get('/', async (req, res) => {
-//   try {
-//     const users = await models.User.findAll({
-//       include: [ models.Task ],
-//     }).then(data => {
-//       return (data.map((item) => (item.get())));
-//     });
-//
-//     res.json(serializeData('users', users));
-//   } catch (err) {
-//     const status = err.status || 500;
-//     const jsonApi = serializeError(status, err);
-//
-//     res.status(status).json(jsonApi);
-//   }
-// });
+  router.use((req, res, next) => {
+    const err = new Error('Forbidden');
+    err.status = 403;
+    next(err);
+  });
 
-router.use((req, res, next) => {
-  const err = new Error('Forbidden');
-  err.status = 403;
-  next(err);
-});
+  return router;
+}
 
-module.exports = router;
+
+module.exports = api;
