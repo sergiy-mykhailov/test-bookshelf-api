@@ -27,7 +27,9 @@
     "pug": "^2.0.0-rc.4",
     "sequelize": "^3.23.6",
     "sequelize-cli": "^3.1.0",
-    "serve-favicon": "~2.3.0"
+    "serve-favicon": "~2.3.0",
+    "swagger-jsdoc": "^3.0.2",
+    "swagger-ui-express": "^3.0.10"
   },
   "devDependencies": {
     "cross-env": "^3.1.3",

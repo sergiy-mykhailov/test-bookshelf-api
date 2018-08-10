@@ -5,10 +5,12 @@ const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const passport = require('passport');
+const swaggerUi = require('swagger-ui-express');
 const serializeError = require('./services/jsonApiError');
 const jsonApiHeaders = require('./services/jsonApiHeaders');
-const api = require('./api/index');
 const jwtStrategy = require('./services/jwtStrategy');
+const swaggerSpec = require('./services/swaggerDoc');
+const api = require('./api/index');
 const mediaType = require('./config/headers').req.contentType.value;
 
 const app = express();
@@ -18,6 +20,9 @@ app.use(bodyParser.json({ type: mediaType }));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
+// documentation
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 // json-api headers
 app.use(jsonApiHeaders);
 
@@ -25,6 +30,7 @@ app.use(jsonApiHeaders);
 app.use(passport.initialize());
 jwtStrategy(passport);
 
+// json-api
 app.use('/api', api(passport));
 
 // catch 404 and forward to error handler

@@ -2,7 +2,6 @@
 
 // Module dependencies.
 const app = require('../app');
-// const debug = require('debug')('express-sequelize');
 const http = require('http');
 const models = require('../models');
 

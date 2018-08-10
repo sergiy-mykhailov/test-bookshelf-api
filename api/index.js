@@ -21,7 +21,6 @@ const api = (passport) => {
   });
 
   return router;
-}
-
+};
 
 module.exports = api;

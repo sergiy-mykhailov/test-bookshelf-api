@@ -8,5 +8,9 @@
   },
   "jwt": {
     "secret": "secret"
+  },
+  "app": {
+    "host": "localhost",
+    "port": "3000"
   }
 }

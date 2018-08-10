@@ -5,6 +5,8 @@ const models = require('./../models');
 const config = require('../config/jwt');
 const headers = require('../config/headers');
 
+// TODO: refactor to Bearer JWT
+
 const jwtStrategy = (passport) => {
   const options = {
     secretOrKey: config.secret,

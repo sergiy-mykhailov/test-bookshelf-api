@@ -1,13 +1,15 @@
 # Bookshelf API
 
-## JSON API with the next stack of technologies:
+## JSON API example project
+ 
+##### Stack of technologies:
 * [Node.JS](https://nodejs.org)
 * [Express.JS](https://expressjs.com)
 * Sequelize
-* ACL
 * PostgreSQL
 * JWT 
 * [Mocha](https://mochajs.org)
+* [Swagger](https://swagger.io/docs/specification/about/)
 
 ## Instalation
 * Install Node.JS
@@ -28,42 +30,11 @@ npm test
 
 ## Usage
 
-Client MUST specify the media type `application/vnd.api+json` in headers (`Content-Type` and `Accept`) - [Documentation](http://jsonapi.org/format/#content-negotiation)
+Client MUST specify the media type `application/vnd.api+json` in headers (`Content-Type` and `Accept`)
 
-##### Sign-Up
+Other JSON API documentation you can find [here](http://jsonapi.org/format/#content-negotiation)
 
-* Method: `POST`
-* Url: `/signup`
-* Example:
-```json
-{
-  "data": {
-    "type": "signup",
-    "attributes": {
-      "username": "Jack",
-      "password": "secretpassword",
-      "email": "jack@example.com",
-      "address": "15 Gray str., New York, USA",
-      "telephone": "+1(234)5678910",
-      "website": "www.jack.website.com"
-    }
-  }
-}
+All API documentation you can find on page `/docs`:
 ```
-
-##### Sign-In
-
-* Method: `POST`
-* Url: `/signin`
-* Example:
-```json
-{
-  "data": {
-    "type": "signin",
-    "attributes": {
-      "username": "Jack",
-      "password": "secretpassword"
-    }
-  }
-}
+http://localhost:3000/docs
 ```
