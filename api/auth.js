@@ -52,8 +52,7 @@ const headers = require('../config/headers');
  *     consumes:
  *       - application/vnd.api+json
  *     parameters:
- *       -
- *         in: body
+ *       - in: body
  *         schema:
  *           type: object
  *           properties:

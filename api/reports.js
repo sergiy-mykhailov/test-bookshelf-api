@@ -1,10 +1,6 @@
 
-const JSONAPIDeserializer = require('jsonapi-serializer').Deserializer;
 const JSONAPISerializer = require('jsonapi-serializer').Serializer;
-const jwt = require('jsonwebtoken');
 const models  = require('../models');
-const config = require('../config/jwt');
-const headers = require('../config/headers');
 
 /**
  * @swagger
@@ -94,13 +90,16 @@ const bookshelf = async (req, res, next) => {
 
     res.json(Serializer.serialize(books));
   } catch (err) {
-    next(err);
+    return next(err);
   }
 };
 
-// TODO: finish docs for borrowed-api
+// TODO: docs for borrowed-api
 const borrowed = async (req, res, next) => {
 // TODO: finish borrowed-api
+  const err = new Error('Not Implemented ');
+  err.status = 501;
+  return next(err);
 };
 
 module.exports = {
