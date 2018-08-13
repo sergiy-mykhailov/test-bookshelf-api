@@ -116,8 +116,7 @@ const signin = async (req, res, next, signupUser = null) => {
     const user = data.get();
     const token = await jwt.sign({ sub: user.id }, config.secret, { expiresIn: '1h' });
 
-    // TODO: refactor to Bearer JWT
-    res.header(headers.req.authorization.key, token);
+    res.header(headers.req.authorization.key, `Bearer ${token}`);
     res.json(Serializer.serialize(user));
   } catch (err) {
     next(err);

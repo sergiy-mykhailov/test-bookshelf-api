@@ -9,5 +9,12 @@ module.exports = (sequelize, DataTypes) => {
     },
   });
 
+  Model.associate = (models) => {
+    models.Bookshelf.belongsTo(models.Book, {
+      foreignKey: 'book_id',
+      as: 'books',
+    });
+  };
+
   return Model;
 };

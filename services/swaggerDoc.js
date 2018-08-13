@@ -2,6 +2,7 @@
 const swaggerJSDoc = require('swagger-jsdoc');
 const config = require('../config/index');
 
+// TODO: fix auth options
 // options for the swagger docs
 let options = {
   definition: {
@@ -24,11 +25,6 @@ let options = {
     //   }
     // }
     securityDefinitions: {
-      // BearerAuth: {
-      //   type: 'http',
-      //   scheme: 'bearer',
-      //   bearerFormat: 'JWT',
-      // },
       Bearer: {
           type: 'JWT',
           name: 'Authorization',
@@ -44,7 +40,7 @@ let options = {
     //     },
     //   },
     // },
-},
+  },
   apis: ['./api/*.js'],
 };
 

@@ -1,5 +1,5 @@
 
-const models = require('../models');
+const models = require('../models/index');
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {

@@ -6,29 +6,41 @@ const models  = require('../models');
 const config = require('../config/jwt');
 const headers = require('../config/headers');
 
-// TODO: finish docs for this api...
-
 /**
  * @swagger
  * definitions:
  *   Bookshelf:
- *     type: array
+ *     type: object
  *     properties:
  *       data:
- *         type: object
- *         properties:
- *           type:
- *             type: string
- *             example: books
- *           id:
- *             type: number
- *             example: 1
- *           attributes:
- *             type: object
- *             properties:
- *               title:
- *                 type: string
- *                 example: title
+ *         type: array
+ *         items:
+ *           type: object
+ *           properties:
+ *             type:
+ *               type: string
+ *               example: books
+ *             id:
+ *               type: number
+ *               example: 6
+ *             attributes:
+ *               type: object
+ *               properties:
+ *                 title:
+ *                   type: string
+ *                   example: The Food Lab
+ *                 author:
+ *                   type: string
+ *                   example: J. Kenji Lopez-Alt
+ *                 year:
+ *                   type: date
+ *                   example: 2015-09-20T21:00:00.000Z
+ *                 description:
+ *                   type: string
+ *                   example: One of the 12 Best Books...
+ *                 category:
+ *                   type: string
+ *                   example: Food
  */
 
 /**
@@ -48,46 +60,47 @@ const headers = require('../config/headers');
  */
 const bookshelf = async (req, res, next) => {
   try {
-    // TODO: finish this api...
-    // const Deserializer = new JSONAPIDeserializer();
-    // const Serializer = new JSONAPISerializer('users', {
-    //   attributes: ['title', 'author', 'year', 'description'],
-    // });
-
+    const Serializer = new JSONAPISerializer('books', {
+      attributes: ['title', 'author', 'year', 'description', 'category'],
+    });
     const { user } = req;
 
-    const data = await models.User.findAll({
-      // where: { user_id: user.id },
-      // attributes: ['id', 'book_id'],
-      // include: [{
-      //   model: models.Book,
-      //   as: 'books',
-      //   attributes: ['title', 'author', 'year', 'description'],
-      //   include: [{
-      //     model: models.Category,
-      //     as: 'categories',
-      //     attributes: [['name', 'category']],
-      //   }],
-      // }],
-
-      where: { id: user.id },
+    const data = await models.Bookshelf.findAll({
+      where: { user_id: user.id },
+      attributes: ['id', 'book_id'],
       include: [{
         model: models.Book,
         as: 'books',
         attributes: ['title', 'author', 'year', 'description'],
+        include: [{
+          model: models.Category,
+          as: 'category',
+          attributes: ['name'],
+        }],
       }],
     });
 
-    console.log('data', data);
+    const books = data.map((item) => {
+      const book = item.get();
+      return {
+        id: book.id,
+        title: book.books.title,
+        author: book.books.author,
+        year: book.books.year,
+        description: book.books.description,
+        category: book.books.category.name,
+      }
+    });
 
-    res.json(data);
+    res.json(Serializer.serialize(books));
   } catch (err) {
     next(err);
   }
 };
 
+// TODO: finish docs for borrowed-api
 const borrowed = async (req, res, next) => {
-
+// TODO: finish borrowed-api
 };
 
 module.exports = {
