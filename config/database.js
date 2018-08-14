@@ -25,8 +25,10 @@ const config = {
     database: process.env.DB_NAME || configProd.database,
     host: process.env.DB_HOSTNAME || configProd.host,
     dialect: configProd.dialect,
-    // use_env_variable: 'DATABASE_URL'
   }
 };
+
+// for soft-delete add to config:
+// "define": { "paranoid": true }
 
 module.exports = config[env];

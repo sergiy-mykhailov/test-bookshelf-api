@@ -84,7 +84,7 @@ const bookshelf = async (req, res, next) => {
         author: book.books.author,
         year: book.books.year,
         description: book.books.description,
-        category: book.books.category.name,
+        category: book.books.category && book.books.category.name,
       }
     });
 

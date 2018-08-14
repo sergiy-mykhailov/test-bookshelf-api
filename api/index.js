@@ -18,7 +18,7 @@ const api = (passport) => {
   router.post('/books', checkAuth(passport), books.create);
   router.patch('/books/:book_id', checkAuth(passport), books.update);
   router.delete('/books/:book_id', checkAuth(passport), books.del);
-  router.post('/books/:book_id', checkAuth(passport), books.borrow);
+  router.post('/books/:book_id/borrow/:user_id', checkAuth(passport), books.borrow);
 
   router.use((req, res, next) => {
     const err = new Error('Forbidden');

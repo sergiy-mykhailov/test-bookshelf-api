@@ -27,6 +27,45 @@ const writableFieldsCategory = (params) => {
   ]);
 };
 
+const getBookInfoFromBookshelf = async (req, res, next) => {
+  const { user } = req;
+  const bookId = Number.parseInt(req.params.book_id);
+
+  const data = await models.Bookshelf.findOne({
+    where: { user_id: user.id },
+    attributes: [['id', 'bookshelf_id'], 'book_id'],
+    include: [{
+      model: models.Book,
+      as: 'books',
+      where: { id: bookId },
+      attributes: ['id', 'title', 'author', 'year', 'description'],
+      include: [{
+        model: models.Category,
+        as: 'category',
+        attributes: ['id', 'name'],
+      }],
+    }],
+  });
+
+  if (!data) {
+    const err = new Error('Not Found');
+    err.status = 404;
+    return next(err);
+  }
+
+  const bookshelf = data.get();
+
+  return {
+    bookshelf_id: bookshelf.bookshelf_id,
+    id: bookshelf.book_id,
+    title: bookshelf.books.title,
+    author: bookshelf.books.author,
+    year: bookshelf.books.year,
+    description: bookshelf.books.description,
+    category: bookshelf.books.category.name,
+  };
+};
+
 /**
  * @swagger
  * definitions:
@@ -89,40 +128,11 @@ const read = async (req, res, next) => {
     const Serializer = new JSONAPISerializer('books', {
       attributes: ['title', 'author', 'year', 'description', 'category'],
     });
-    const { user } = req;
-    const bookId = Number.parseInt(req.params.book_id);
 
-    const data = await models.Bookshelf.findOne({
-      where: { user_id: user.id },
-      attributes: ['book_id'],
-      include: [{
-        model: models.Book,
-        as: 'books',
-        where: { id: bookId },
-        attributes: ['id', 'title', 'author', 'year', 'description'],
-        include: [{
-          model: models.Category,
-          as: 'category',
-          attributes: ['name'],
-        }],
-      }],
-    });
-
-    if (!data) {
-      const err = new Error('Not Found');
-      err.status = 404;
-      return next(err);
+    const book = await getBookInfoFromBookshelf(req, res, next);
+    if (!book) {
+      return null;
     }
-
-    const bookshelf = data.get();
-    const book =  {
-      id: bookshelf.book_id,
-      title: bookshelf.books.title,
-      author: bookshelf.books.author,
-      year: bookshelf.books.year,
-      description: bookshelf.books.description,
-      category: bookshelf.books.category.name,
-    };
 
     res.json(Serializer.serialize(book));
   } catch (err) {
@@ -294,29 +304,11 @@ const update = async (req, res, next) => {
     const Serializer = new JSONAPISerializer('books', {
       attributes: ['title', 'author', 'year', 'description', 'category'],
     });
-    const { user } = req;
     const bookId = Number.parseInt(req.params.book_id);
 
-    const bookshelf = await models.Bookshelf.findOne({
-      where: {user_id: user.id},
-      attributes: ['book_id'],
-      include: [{
-        model: models.Book,
-        as: 'books',
-        where: {id: bookId},
-        attributes: ['id', 'title', 'author', 'year', 'description'],
-        include: [{
-          model: models.Category,
-          as: 'category',
-          attributes: ['id', 'name'],
-        }],
-      }],
-    });
-
-    if (!bookshelf) {
-      const err = new Error('Not Found');
-      err.status = 404;
-      return next(err);
+    const bookOnBookshelf = await getBookInfoFromBookshelf(req, res, next);
+    if (!bookOnBookshelf) {
+      return null;
     }
 
     const data = await Deserializer.deserialize(req.body);
@@ -354,18 +346,92 @@ const update = async (req, res, next) => {
   }
 };
 
+/**
+ * @swagger
+ * /books/{id}:
+ *   delete:
+ *     summary: Delete book from bookshelf
+ *     produces:
+ *       - application/vnd.api+json
+ *     consumes:
+ *       - application/vnd.api+json
+ *     parameters:
+ *       - in: path
+ *         name: book_id
+ *         description: book identifier
+ *         type: number
+ *     responses:
+ *       200:
+ *         description: Returns book data
+ *         schema:
+ *           $ref: '#/definitions/Book'
+ *       404:
+ *         description: The book is not found or book is not present in the bookshelf
+ */
 const del = async (req, res, next) => {
-// TODO: finish delete-api
-  const err = new Error('Not Implemented ');
-  err.status = 501;
-  return next(err);
+  try {
+    const Serializer = new JSONAPISerializer('books', {
+      attributes: ['title', 'author', 'year', 'description', 'category'],
+    });
+
+    const book = await getBookInfoFromBookshelf(req, res, next);
+    if (!book) {
+      return null;
+    }
+
+    const deleted = await models.Bookshelf.destroy({
+      where: { id: book.bookshelf_id },
+      returning: true,
+    });
+
+    if (deleted === 0) {
+      const err = new Error('Not Found');
+      err.status = 404;
+      return next(err);
+    }
+
+    res.json(Serializer.serialize(book));
+  } catch (err) {
+    return next(err);
+  }
 };
 
 const borrow = async (req, res, next) => {
-// TODO: finish borrow-api
-  const err = new Error('Not Implemented ');
-  err.status = 501;
-  return next(err);
+  try {
+    const Deserializer = new JSONAPIDeserializer();
+    const Serializer = new JSONAPISerializer('books', {
+      attributes: ['user', 'date', 'returnDate'],
+    });
+
+    const book = await getBookInfoFromBookshelf(req, res, next);
+    if (!book) {
+      return null;
+    }
+
+    const book_id = Number.parseInt(req.params.book_id);
+    const user_id = Number.parseInt(req.params.user_id);
+    const owner_id = Number.parseInt(req.user.id);
+
+    const data = await Deserializer.deserialize(req.body);
+
+    const borrower = await models.Borrower.create(writableFieldsBorrower({
+      ...data,
+      owner_id,
+      user_id,
+      book_id,
+    }));
+    if (!borrower) {
+      const err = new Error('Conflict');
+      err.status = 409;
+      return next(err);
+    }
+
+
+
+    res.json(Serializer.serialize(borrower));
+  } catch (err) {
+    return next(err);
+  }
 };
 
 module.exports = {
