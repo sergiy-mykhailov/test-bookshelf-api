@@ -5,6 +5,8 @@ var Bluebird = require('bluebird');
 var expect   = require('expect.js');
 var request  = require('supertest');
 
+// TODO: write tests
+
 describe('user creation page', function () {
   before(function () {
       return require('../../models').sequelize.sync();

@@ -2,6 +2,8 @@
 
 var expect = require('expect.js');
 
+// TODO: write tests
+
 describe('models/task', function () {
   before(function () {
       return require('../../models').sequelize.sync();
@@ -9,7 +11,7 @@ describe('models/task', function () {
 
   beforeEach(function () {
     this.User = require('../../models').User;
-    this.Task = require('../../models').Task;
+    // this.Task = require('../../models').Task;
   });
 
   describe('create', function () {

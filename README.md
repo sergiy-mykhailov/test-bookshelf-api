@@ -14,12 +14,13 @@
 ## Instalation
 * Install Node.JS
 * Instal PostgreSQL
-* create database: `npm run create`
 
 ## Starting App
 ```
 npm install
+npm run create
 npm run migrate
+npm run seed
 npm start
 ```
 
