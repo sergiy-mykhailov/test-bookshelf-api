@@ -4,6 +4,7 @@ const checkAuth = require('../services/checkAuth');
 const auth = require('./auth');
 const reports = require('./reports');
 const books = require('./books');
+const stats = require('./stats');
 
 const router  = express.Router();
 
@@ -19,6 +20,9 @@ const api = (passport) => {
   router.patch('/books/:book_id', checkAuth(passport), books.update);
   router.delete('/books/:book_id', checkAuth(passport), books.del);
   router.post('/books/:book_id/borrow/:user_id', checkAuth(passport), books.borrow);
+
+  router.get('/stats/category', checkAuth(passport), stats.byCategory);
+  router.get('/stats/author', checkAuth(passport), stats.byAuthor);
 
   router.use((req, res, next) => {
     const err = new Error('Forbidden');
