@@ -27,6 +27,16 @@ const writableFieldsCategory = (params) => {
   ]);
 };
 
+const writableFieldsBorrower = (params) => {
+  return utils.extractFields(params, [
+    'owner_id',
+    'user_id',
+    'book_id',
+    'date',
+    'returnDate',
+  ]);
+};
+
 const getBookInfoFromBookshelf = async (req, res, next) => {
   const { user } = req;
   const bookId = Number.parseInt(req.params.book_id);
@@ -99,6 +109,30 @@ const getBookInfoFromBookshelf = async (req, res, next) => {
  *               category:
  *                 type: string
  *                 example: Food
+ *   Borrower:
+ *     type: object
+ *     properties:
+ *       data:
+ *         type: object
+ *         properties:
+ *           type:
+ *             type: string
+ *             example: borrower
+ *           id:
+ *             type: number
+ *             example: 6
+ *           attributes:
+ *             type: object
+ *             properties:
+ *               userId:
+ *                 type: number
+ *                 example: 2
+ *               date:
+ *                 type: date
+ *                 example: 2015-09-20T21:00:00.000Z
+ *               returnDate:
+ *                 type: date
+ *                 example: 2018-09-20T21:00:00.000Z
  */
 
 /**
@@ -396,12 +430,68 @@ const del = async (req, res, next) => {
   }
 };
 
+/**
+ * @swagger
+ * /books/{book_id}/borrow/{user_id}:
+ *   post:
+ *     summary: Add borrowed book
+ *     produces:
+ *       - application/vnd.api+json
+ *     consumes:
+ *       - application/vnd.api+json
+ *     parameters:
+ *       - in: path
+ *         name: book_id
+ *         description: book identifier
+ *         type: number
+ *       - in: path
+ *         name: user_id
+ *         description: borrower identifier
+ *         type: number
+ *       - in: body
+ *         schema:
+ *           type: object
+ *           properties:
+ *             data:
+ *               type: object
+ *               properties:
+ *                 type:
+ *                   type: string
+ *                   example: borrower
+ *                 attributes:
+ *                   type: object
+ *                   properties:
+ *                     date:
+ *                       type: date
+ *                       example: 2018-07-23T22:00:00.000Z
+ *                     returnDate:
+ *                       type: string
+ *                       example: 2018-10-23T22:00:00.000Z
+ *     responses:
+ *       200:
+ *         description: Returns borrower data
+ *         schema:
+ *           $ref: '#/definitions/Borrower'
+ *       400:
+ *         description: Body parameters are not set
+ *       404:
+ *         description: The book is not found or book is not present in the bookshelf
+ *       409:
+ *         description: Borrower already exists
+ */
 const borrow = async (req, res, next) => {
   try {
-    const Deserializer = new JSONAPIDeserializer();
-    const Serializer = new JSONAPISerializer('books', {
-      attributes: ['user', 'date', 'returnDate'],
+    const Deserializer = new JSONAPIDeserializer({ keyForAttribute: 'camelCase' });
+    const Serializer = new JSONAPISerializer('borrower', {
+      attributes: ['user_id', 'date', 'returnDate'],
+      keyForAttribute: 'camelCase',
     });
+
+    if (!req.body || Object.keys(req.body).length === 0) {
+      const err = new Error('Bad Request');
+      err.status = 400;
+      return next(err);
+    }
 
     const book = await getBookInfoFromBookshelf(req, res, next);
     if (!book) {
@@ -420,13 +510,12 @@ const borrow = async (req, res, next) => {
       user_id,
       book_id,
     }));
+
     if (!borrower) {
       const err = new Error('Conflict');
       err.status = 409;
       return next(err);
     }
-
-
 
     res.json(Serializer.serialize(borrower));
   } catch (err) {
