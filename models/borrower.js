@@ -36,17 +36,17 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   Model.associate = (models) => {
-    models.Bookshelf.belongsTo(models.User, {
+    models.Borrower.belongsTo(models.User, {
       foreignKey: 'owner_id',
       as: 'owner',
     });
-    models.Bookshelf.belongsTo(models.User, {
+    models.Borrower.belongsTo(models.User, {
       foreignKey: 'user_id',
       as: 'user',
     });
-    models.Bookshelf.belongsTo(models.Book, {
+    models.Borrower.belongsTo(models.Book, {
       foreignKey: 'book_id',
-      as: 'book',
+      as: 'books',
     });
   };
 
