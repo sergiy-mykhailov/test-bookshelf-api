@@ -11,9 +11,9 @@
 * [Mocha](https://mochajs.org)
 * [Swagger](https://swagger.io/docs/specification/about/)
 
-## Instalation
+## Installation
 * Install Node.JS
-* Instal PostgreSQL
+* Install PostgreSQL
 
 ## Starting App
 ```
